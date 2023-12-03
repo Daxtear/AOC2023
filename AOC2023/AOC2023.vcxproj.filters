@@ -21,12 +21,18 @@
     <ClCompile Include="Days.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
+    <ClCompile Include="Helpers.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
     <ClInclude Include="Days.h">
+      <Filter>Headerdateien</Filter>
+    </ClInclude>
+    <ClInclude Include="Helpers.h">
       <Filter>Headerdateien</Filter>
     </ClInclude>
   </ItemGroup>
@@ -37,5 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="Day1.txt" />
+    <Text Include="Day2.txt" />
+    <Text Include="Day3.txt" />
   </ItemGroup>
 </Project>

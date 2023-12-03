@@ -2,8 +2,13 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <list>
+#include <vector>
 
 using namespace std;
 
-int Day1_1(list<string>& lines);
+int Day1_1(vector<string>& lines);
+int Day1_2(vector<string>& lines);
+int Day2_1(vector<string>& lines);
+int Day2_2(vector<string>& lines);
+int Day3_1(vector<string>& lines);
+int Day3_2(vector<string>& lines);

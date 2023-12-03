@@ -2,30 +2,32 @@
 //
 
 #include <iostream>
-#include <fstream>
 #include <string>
-#include <list>
+#include <vector>
 
 #include "Days.h"
+#include "Helpers.h"
 
 using namespace std;
 
-void ReadFile(const char* filename, list<string>& lines)
-{
-    lines.clear();
-    ifstream file(filename);
-    string s;
-    while (getline(file, s))
-        lines.push_back(s);
-}
-
 int main()
 {
-    list<string> day1Data;
-    ReadFile("Day1.txt",day1Data);
-    int day1_1 = Day1_1(day1Data);
+    //vector<string> day1Data;
+    //ReadFile("Day1.txt",day1Data);
+    //int day1_1 = Day1_1(day1Data);
+    //int day1_2 = Day1_2(day1Data);
 
-    cout << to_string(day1_1) + "\r\n";
+    //vector<string> day2Data;
+    //ReadFile("Day2.txt",day2Data);
+    //int day2_1 = Day2_1(day2Data);
+    //int day2_2 = Day2_2(day2Data);
+
+    vector<string> day3Data;
+    ReadFile("Day3.txt",day3Data);
+    //int day3_1 = Day3_1(day3Data);
+    int day3_2 = Day3_2(day3Data);
+
+    cout << to_string(day3_2) + "\r\n";
 }
 
 // Programm ausführen: STRG+F5 oder Menüeintrag "Debuggen" > "Starten ohne Debuggen starten"

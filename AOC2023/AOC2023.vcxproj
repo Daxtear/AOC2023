@@ -129,9 +129,11 @@
   <ItemGroup>
     <ClCompile Include="AOC2023.cpp" />
     <ClCompile Include="Days.cpp" />
+    <ClCompile Include="Helpers.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Days.h" />
+    <ClInclude Include="Helpers.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
@@ -141,6 +143,8 @@
     <Text Include="Day1.txt">
       <DeploymentContent>true</DeploymentContent>
     </Text>
+    <Text Include="Day2.txt" />
+    <Text Include="Day3.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
