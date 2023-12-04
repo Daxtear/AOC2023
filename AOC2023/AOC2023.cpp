@@ -22,12 +22,17 @@ int main()
     //int day2_1 = Day2_1(day2Data);
     //int day2_2 = Day2_2(day2Data);
 
-    vector<string> day3Data;
-    ReadFile("Day3.txt",day3Data);
+    //vector<string> day3Data;
+    //ReadFile("Day3.txt",day3Data);
     //int day3_1 = Day3_1(day3Data);
-    int day3_2 = Day3_2(day3Data);
+    //int day3_2 = Day3_2(day3Data);
 
-    cout << to_string(day3_2) + "\r\n";
+    vector<string> day4Data;
+    ReadFile("Day4.txt", day4Data);
+    //int day4_1 = Day4_1(day4Data);
+    int day4_2 = Day4_2(day4Data);
+
+    cout << to_string(day4_2) + "\r\n";
 }
 
 // Programm ausführen: STRG+F5 oder Menüeintrag "Debuggen" > "Starten ohne Debuggen starten"

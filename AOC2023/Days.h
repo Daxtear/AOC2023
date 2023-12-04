@@ -12,3 +12,5 @@ int Day2_1(vector<string>& lines);
 int Day2_2(vector<string>& lines);
 int Day3_1(vector<string>& lines);
 int Day3_2(vector<string>& lines);
+int Day4_1(vector<string>& lines);
+int Day4_2(vector<string>& lines);

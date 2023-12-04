@@ -28,6 +28,13 @@ void ReadFile(const char* filename, vector<string>& lines)
 		lines.push_back(s);
 }
 
+int Sum(vector<int> ints) {
+	int sum = 0;
+	for (int num : ints)
+		sum += num;
+	return sum;
+}
+
 // trim from start (in place)
 void LTrim(std::string& s) {
 	s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {

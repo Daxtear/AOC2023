@@ -138,8 +138,7 @@ int Day2_2(vector<string>& lines) {
 	return score;
 }
 #pragma endregion day2
-
-
+#pragma region day3
 int Day3_1(vector<string>& lines) {
 	int sum = 0;
 	for (int a = 0; a < lines.size(); ++a) {
@@ -363,3 +362,69 @@ int Day3_2(vector<string>& lines) {
 
 	return sum;
 }
+
+#pragma endregion day3
+#pragma region day4
+int Day4_1(vector<string>& lines) {
+	int sum = 0;
+	for (auto line : lines) {
+		int linescore = 0;
+		vector<string> segments;
+		Split(line,':', segments);
+		
+		vector<string> lists;
+		Split(segments[1], '|', lists);
+		
+		vector<string> winning;
+		Split(TrimCopy(lists[0]), ' ', winning);
+
+		vector<string> numbers;
+		Split(TrimCopy(lists[1]), ' ', numbers);
+
+		for (auto number : numbers) {
+			if (number.empty())
+				continue;
+
+			if (find(winning.begin(), winning.end(), number) != winning.end()) {
+				if (linescore == 0)
+					linescore = 1;
+				else
+					linescore *= 2;
+			}
+		}
+		sum += linescore;
+	}
+	return sum;
+}
+
+int Day4_2(vector<string>& lines) {
+	vector<int> counts(lines.size(), 1);
+	for (int a = 0; a < lines.size(); ++a) {
+		string line = lines[a];
+
+		int wins = 0;
+		vector<string> segments;
+		Split(line, ':', segments);
+
+		vector<string> lists;
+		Split(segments[1], '|', lists);
+
+		vector<string> winning;
+		Split(TrimCopy(lists[0]), ' ', winning);
+
+		vector<string> numbers;
+		Split(TrimCopy(lists[1]), ' ', numbers);
+
+		for (auto number : numbers) {
+			if (number.empty())
+				continue;
+
+			if (find(winning.begin(), winning.end(), number) != winning.end()) {
+				wins++;
+				counts[a + wins] += counts[a];
+			}
+		}
+	}
+	return Sum(counts);
+}
+#pragma endregion day4
