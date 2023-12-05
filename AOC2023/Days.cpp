@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <algorithm>
 
 #include "Days.h"
 #include "Helpers.h"
@@ -286,7 +287,7 @@ int Day3_2(vector<string>& lines) {
 			gears[vec].number1 = stoi(value);
 		}
 
-	};
+		};
 
 	for (int a = 0; a < lines.size(); ++a) {
 		string prev;
@@ -315,7 +316,7 @@ int Day3_2(vector<string>& lines) {
 		auto checkAndAddLocation = [&](string& line, int x, int y) {
 			if (line[x] == '*' && (gearlocations.empty() || find(gearlocations.begin(), gearlocations.end(), ivec2(x, y)) == gearlocations.end()))
 				gearlocations.push_back(ivec2(x, y));
-		};
+			};
 
 		for (int b = 0; b < line.length(); ++b) {
 			char c = line[b];
@@ -338,7 +339,7 @@ int Day3_2(vector<string>& lines) {
 			}
 			else {
 				if (!currentnumber.empty()) {
-					
+
 					for (auto loc : gearlocations) {
 						addgear(loc, currentnumber);
 					}
@@ -370,11 +371,11 @@ int Day4_1(vector<string>& lines) {
 	for (auto line : lines) {
 		int linescore = 0;
 		vector<string> segments;
-		Split(line,':', segments);
-		
+		Split(line, ':', segments);
+
 		vector<string> lists;
 		Split(segments[1], '|', lists);
-		
+
 		vector<string> winning;
 		Split(TrimCopy(lists[0]), ' ', winning);
 
@@ -428,3 +429,100 @@ int Day4_2(vector<string>& lines) {
 	return Sum(counts);
 }
 #pragma endregion day4
+
+struct mapping {
+public:
+	int SourceRangeStart;
+	int DestRangeStart;
+	int RangeLength;
+	int DestRangeEnd() {
+		return DestRangeStart + RangeLength - 1;
+	}
+	int SourceRangeEnd() {
+		return SourceRangeStart + RangeLength - 1;
+	}
+
+	int GetDest(int in) {
+		if (in < SourceRangeStart || in > SourceRangeEnd())
+			return in;
+		return in - SourceRangeStart + DestRangeStart;
+	}
+
+	mapping(string input) {
+		vector<string> segments;
+		Split(TrimCopy(input), ' ', segments);
+		SourceRangeStart = stoi(segments[0]);
+		DestRangeStart = stoi(segments[1]);
+		RangeLength = stoi(segments[2]);
+	}
+
+	bool operator<(const mapping& other) const {
+		return SourceRangeStart < other.SourceRangeStart;
+	}
+
+	bool operator>(const mapping& other) const {
+		return SourceRangeStart > other.SourceRangeStart;
+	}
+
+	bool operator==(const mapping& other) const {
+		return SourceRangeStart == other.SourceRangeStart && RangeLength == other.RangeLength;
+	}
+};
+
+class almanac {
+public:
+
+	vector<int> Seeds;
+	vector<mapping> Mappings[7];
+
+	int GetMapping(int level, int source) {
+		vector<mapping>::reverse_iterator mi = find_if(Mappings[level].rbegin(), Mappings[level].rend(), [&](mapping m) { return m.SourceRangeStart <= source; });
+		if (mi == Mappings[level].rend()) {
+			return source;
+		}
+		else {
+			return mi->GetDest(source);
+		}
+	}
+
+	almanac(vector<string>& input) {
+		int mode = 0; // 0 = seed2soil; 1 = soil2fert; 2 = fert2water; 3 = water2light; 4 = light2temp; 5 = temp2hum; 6 = hum2loc
+		for (int a = 0; a < input.size(); ++a) {
+			if (a == 0) {
+				vector<string> segments;
+				Split(TrimCopy(input[a]), ':', segments);
+				vector<string> seedstrings;
+				Split(TrimCopy(segments[1]), ' ', seedstrings);
+				for (string seed : seedstrings) {
+					Seeds.push_back(stoi(seed));
+				}
+				a += 2;
+				continue;
+			}
+			if (input[a].empty()) {
+				sort(Mappings[mode].begin(), Mappings[mode].end());
+				mode++;
+				a++;
+				continue;
+			}
+			mapping m = mapping(input[a]);
+			Mappings[mode].push_back(m);
+		}
+	}
+
+};
+
+int Day5_1(vector<string>& lines) {
+	almanac al = almanac(lines);
+	vector<int> seedLocs;
+
+	for (int seed : al.Seeds) {
+		seedLocs.push_back(al.GetMapping(6, al.GetMapping(5, al.GetMapping(4, al.GetMapping(3, al.GetMapping(2, al.GetMapping(1, al.GetMapping(0, seed))))))));
+	}
+
+	return *min_element(seedLocs.begin(), seedLocs.end());
+}
+
+int Day5_2(vector<string>& lines) {
+	return 0;
+}
