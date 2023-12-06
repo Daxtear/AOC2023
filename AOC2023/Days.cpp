@@ -429,6 +429,7 @@ int Day4_2(vector<string>& lines) {
 	return Sum(counts);
 }
 #pragma endregion day4
+#pragma region day5
 
 struct mapping {
 public:
@@ -478,12 +479,12 @@ public:
 
 	long long GetMapping(int level, long long source) {
 		vector<mapping>::reverse_iterator mi = find_if(Mappings[level].rbegin(), Mappings[level].rend(), [&](mapping m) { return m.SourceRangeStart <= source; });
-		//if (mi == Mappings[level].rend()) {
-		//	return source;
-		//}
-		//else {
+		if (mi == Mappings[level].rend()) {
+			return source;
+		}
+		else {
 			return mi->GetDest(source);
-		//}
+		}
 	}
 
 	almanac(vector<string>& input) {
@@ -509,6 +510,7 @@ public:
 			mapping m = mapping(input[a]);
 			Mappings[mode].push_back(m);
 		}
+		sort(Mappings[mode].begin(), Mappings[mode].end());
 	}
 
 };
@@ -525,5 +527,28 @@ long long Day5_1(vector<string>& lines) {
 }
 
 long long Day5_2(vector<string>& lines) {
-	return 0;
+	almanac al = almanac(lines);
+	long long lowestloc = LLONG_MAX;
+
+	for (long long a = 0; a < al.Seeds.size() / 2; ++a) {
+		long long seedpos = a * 2;
+		for (long long b = 0; b < al.Seeds[seedpos + 1]; ++b) {
+			long long newloc = al.GetMapping(6, al.GetMapping(5, al.GetMapping(4, al.GetMapping(3, al.GetMapping(2, al.GetMapping(1, al.GetMapping(0, al.Seeds[seedpos] + b)))))));
+			if (newloc < lowestloc)
+				lowestloc = newloc;
+		}
+		cout << "seedloc: " + to_string(lowestloc) + "\n";
+	}
+
+	return lowestloc;
+}
+
+#pragma endregion day5
+
+int Day6_1(vector<string>& lines) {
+
+}
+
+int Day6_2(vector<string>& lines) {
+
 }

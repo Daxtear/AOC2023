@@ -37,7 +37,7 @@ namespace WhatTheSharp {
 		public List<Mapping>[] Mappings = new List<Mapping>[7];
 
 		public long GetMapping(int level, long source) {
-			var mapping = Mappings[level].LastOrDefault(t => t.SourceRangeStart <= source);
+			var mapping = Mappings[level].OrderByDescending(t => t.SourceRangeStart).FirstOrDefault(t => t.SourceRangeStart <= source);
 			if (mapping is null)
 				return source;
 			return mapping.GetDest(source);
