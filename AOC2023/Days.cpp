@@ -432,18 +432,19 @@ int Day4_2(vector<string>& lines) {
 
 struct mapping {
 public:
-	int SourceRangeStart;
-	int DestRangeStart;
-	int RangeLength;
-	int DestRangeEnd() {
+	long long SourceRangeStart;
+	long long DestRangeStart;
+	long long RangeLength;
+	long long DestRangeEnd() {
 		return DestRangeStart + RangeLength - 1;
 	}
-	int SourceRangeEnd() {
+	long long SourceRangeEnd() {
+		//cout << to_string(SourceRangeStart) + " " + to_string(SourceRangeStart + RangeLength - 1) + "\n";
 		return SourceRangeStart + RangeLength - 1;
 	}
 
-	int GetDest(int in) {
-		if (in < SourceRangeStart || in > SourceRangeEnd())
+	long long GetDest(long long in) {
+		if (in <= SourceRangeStart || in > SourceRangeEnd())
 			return in;
 		return in - SourceRangeStart + DestRangeStart;
 	}
@@ -451,9 +452,9 @@ public:
 	mapping(string input) {
 		vector<string> segments;
 		Split(TrimCopy(input), ' ', segments);
-		SourceRangeStart = stoi(segments[0]);
-		DestRangeStart = stoi(segments[1]);
-		RangeLength = stoi(segments[2]);
+		SourceRangeStart = stoll(segments[1]);
+		DestRangeStart = stoll(segments[0]);
+		RangeLength = stoll(segments[2]);
 	}
 
 	bool operator<(const mapping& other) const {
@@ -472,17 +473,17 @@ public:
 class almanac {
 public:
 
-	vector<int> Seeds;
+	vector<long long> Seeds;
 	vector<mapping> Mappings[7];
 
-	int GetMapping(int level, int source) {
+	long long GetMapping(int level, long long source) {
 		vector<mapping>::reverse_iterator mi = find_if(Mappings[level].rbegin(), Mappings[level].rend(), [&](mapping m) { return m.SourceRangeStart <= source; });
-		if (mi == Mappings[level].rend()) {
-			return source;
-		}
-		else {
+		//if (mi == Mappings[level].rend()) {
+		//	return source;
+		//}
+		//else {
 			return mi->GetDest(source);
-		}
+		//}
 	}
 
 	almanac(vector<string>& input) {
@@ -494,7 +495,7 @@ public:
 				vector<string> seedstrings;
 				Split(TrimCopy(segments[1]), ' ', seedstrings);
 				for (string seed : seedstrings) {
-					Seeds.push_back(stoi(seed));
+					Seeds.push_back(stoll(seed));
 				}
 				a += 2;
 				continue;
@@ -512,17 +513,17 @@ public:
 
 };
 
-int Day5_1(vector<string>& lines) {
+long long Day5_1(vector<string>& lines) {
 	almanac al = almanac(lines);
-	vector<int> seedLocs;
+	vector<long long> seedLocs;
 
-	for (int seed : al.Seeds) {
+	for (long long seed : al.Seeds) {
 		seedLocs.push_back(al.GetMapping(6, al.GetMapping(5, al.GetMapping(4, al.GetMapping(3, al.GetMapping(2, al.GetMapping(1, al.GetMapping(0, seed))))))));
 	}
 
 	return *min_element(seedLocs.begin(), seedLocs.end());
 }
 
-int Day5_2(vector<string>& lines) {
+long long Day5_2(vector<string>& lines) {
 	return 0;
 }

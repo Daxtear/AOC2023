@@ -34,7 +34,7 @@ int main()
 
     vector<string> day5Data;
     ReadFile("Day5.txt", day5Data);
-    int day5_1 = Day5_1(day5Data);
+    long long day5_1 = Day5_1(day5Data);
     //int day5_2 = Day5_2(day5Data);
 
     cout << to_string(day5_1) + "\r\n";
