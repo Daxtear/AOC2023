@@ -546,9 +546,65 @@ long long Day5_2(vector<string>& lines) {
 #pragma endregion day5
 
 int Day6_1(vector<string>& lines) {
+	vector<string> timesegments;
+	vector<string> distsegments;
+	Split(lines[0], ':', timesegments);
+	Split(lines[1], ':', distsegments);
+	vector<string> timestrings;
+	vector<string> diststrings;
+	Split(TrimCopy(timesegments[1]), ' ', timestrings);
+	Split(TrimCopy(distsegments[1]), ' ', diststrings);
+	
+	vector<int> winningGames;
+	for (int a = 0; a < timestrings.size(); ++a) {
+		int time = stoi(timestrings[a]);
+		int dist = stoi(diststrings[a]);
 
+		int winstart = 0;
+		int winend = time;
+
+		for (int b = 0; b < time; ++b) {
+			if (winstart == 0) {
+				if ((time - b) * b > dist)
+					winstart = b;
+			}
+			else {
+				if ((time - b) * b <= dist) {
+					winend = b;
+					break;
+				}
+			}
+		}
+		winningGames.push_back(winend - winstart);
+	}
+
+	return Product(winningGames);
 }
 
-int Day6_2(vector<string>& lines) {
+long long Day6_2(vector<string>& lines) {
+	vector<string> timesegments;
+	vector<string> distsegments;
+	Split(lines[0], ':', timesegments);
+	Split(lines[1], ':', distsegments);
+	
+	long long time = stoll(RemoveAll(timesegments[1], ' '));
+	long long dist = stoll(RemoveAll(distsegments[1], ' '));
 
+	long long winstart = 0;
+	long long winend = time;
+
+	for (long long b = 0; b < time; ++b) {
+		if (winstart == 0) {
+			if ((time - b) * b > dist)
+				winstart = b;
+		}
+		else {
+			if ((time - b) * b <= dist) {
+				winend = b;
+				break;
+			}
+		}
+	}
+
+	return winend - winstart;
 }

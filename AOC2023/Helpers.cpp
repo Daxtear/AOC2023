@@ -10,9 +10,11 @@ void Split(string str, char separator, vector<string>& strings) {
 		// If we reached the end of the word or the end of the input.
 		if (str[i] == separator || i == str.size()) {
 			endIndex = i;
-			string temp;
-			temp.append(str, startIndex, endIndex - startIndex);
-			strings.push_back(temp);
+			if (endIndex != startIndex) {
+				string temp;
+				temp.append(str, startIndex, endIndex - startIndex);
+				strings.push_back(temp);
+			}
 			startIndex = endIndex + 1;
 		}
 	}
@@ -33,6 +35,13 @@ int Sum(vector<int> ints) {
 	for (int num : ints)
 		sum += num;
 	return sum;
+}
+
+int Product(vector<int> ints) {
+	int pro = 1;
+	for (int num : ints)
+		pro *= num;
+	return pro;
 }
 
 // trim from start (in place)
@@ -71,4 +80,13 @@ std::string RTrimCopy(std::string s) {
 std::string TrimCopy(std::string s) {
 	Trim(s);
 	return s;
+}
+
+std::string RemoveAll(std::string s, char c) {
+	string str = "";
+	for (char ch : s) {
+		if (ch != c)
+			str += ch;
+	}
+	return str;
 }

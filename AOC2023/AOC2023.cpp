@@ -39,10 +39,10 @@ int main()
 
     vector<string> day6Data;
     ReadFile("Day6.txt", day6Data);
-    int day6_1 = Day6_1(day6Data);
-    //int day6_2 = Day6_2(day6Data);
+    //int day6_1 = Day6_1(day6Data);
+    long long day6_2 = Day6_2(day6Data);
 
-    cout << to_string(day6_1) + "\r\n";
+    cout << to_string(day6_2) + "\r\n";
 }
 
 // Programm ausführen: STRG+F5 oder Menüeintrag "Debuggen" > "Starten ohne Debuggen starten"

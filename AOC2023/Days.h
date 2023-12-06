@@ -17,4 +17,4 @@ int Day4_2(vector<string>& lines);
 long long Day5_1(vector<string>& lines);
 long long Day5_2(vector<string>& lines);
 int Day6_1(vector<string>& lines);
-int Day6_2(vector<string>& lines);
+long long Day6_2(vector<string>& lines);
