@@ -18,11 +18,10 @@ void Split(string str, char separator, vector<string>& strings) {
 			startIndex = endIndex + 1;
 		}
 	}
-	
+
 }
 
-void ReadFile(const char* filename, vector<string>& lines)
-{
+void ReadFile(const char* filename, vector<string>& lines) {
 	lines.clear();
 	ifstream file(filename);
 	string s;
@@ -44,39 +43,33 @@ int Product(vector<int> ints) {
 	return pro;
 }
 
-// trim from start (in place)
 void LTrim(std::string& s) {
 	s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
 		return !std::isspace(ch);
 		}));
 }
 
-// trim from end (in place)
 void RTrim(std::string& s) {
 	s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) {
 		return !std::isspace(ch);
 		}).base(), s.end());
 }
 
-// trim from both ends (in place)
 void Trim(std::string& s) {
 	RTrim(s);
 	LTrim(s);
 }
 
-// trim from start (copying)
 std::string LTrimCopy(std::string s) {
 	LTrim(s);
 	return s;
 }
 
-// trim from end (copying)
 std::string RTrimCopy(std::string s) {
 	RTrim(s);
 	return s;
 }
 
-// trim from both ends (copying)
 std::string TrimCopy(std::string s) {
 	Trim(s);
 	return s;

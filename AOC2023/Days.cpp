@@ -544,6 +544,7 @@ long long Day5_2(vector<string>& lines) {
 }
 
 #pragma endregion day5
+#pragma region day6
 
 int Day6_1(vector<string>& lines) {
 	vector<string> timesegments;
@@ -607,4 +608,127 @@ long long Day6_2(vector<string>& lines) {
 	}
 
 	return winend - winstart;
+}
+
+#pragma endregion day6
+
+vector<char> cardvalues {'2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A' };
+vector<char> cardvaluesJ {'J', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'Q', 'K', 'A' };
+
+class hand {
+	public:
+		int bid;
+		string cards;
+		int values[5];
+
+		int type = 0;
+
+		hand(string input, bool Jmode) {
+			vector<string> segments;
+			Split(input, ' ', segments);
+			cards = segments[0];
+			bid = stoi(segments[1]);
+			map<char, int> chars;
+			int maxcardcount = 0;
+			int jCount = 0;
+			
+			for (int a = 0; a < 5; ++a) {
+				if (chars.find(cards[a]) == chars.end())
+					chars[cards[a]] = 1;
+				else
+					chars[cards[a]] += 1;
+
+				if (chars[cards[a]] > maxcardcount)
+					maxcardcount = chars[cards[a]];
+
+				if (Jmode && cards[a] == 'J')
+					jCount++;
+
+				if(Jmode)
+					values[a] = find(cardvaluesJ.begin(), cardvaluesJ.end(), cards[a]) - cardvaluesJ.begin();
+				else
+					values[a] = find(cardvalues.begin(), cardvalues.end(), cards[a]) - cardvalues.begin();
+			}
+
+			switch (chars.size()) {
+			case 1:
+				type = 6;
+				break;
+			case 2:
+				if (jCount > 0)
+					type = 6;
+				else if (maxcardcount == 4)
+					type = 5;
+				else
+					type = 4;
+				break;
+			case 3:
+				if (jCount > 1 || (maxcardcount == 3 && jCount == 1))
+					type = 5;
+				else if (maxcardcount == 3 || jCount == 1)
+					type = 3;
+				else
+					type = 2;
+				break;
+			case 4:
+				if (jCount > 0)
+					type = 3;
+				else
+					type = 1;
+				break;
+			case 5:
+				if (jCount > 0)
+					type = 1;
+				else
+					type = 0;
+				break;
+			}
+
+		}
+
+		bool operator<(const hand& other) const {
+			if (type != other.type)
+				return type < other.type;
+
+			for (int a = 0; a < 5; ++a) {
+				if (values[a] == other.values[a])
+					continue;
+				return values[a] < other.values[a];
+			}
+			return false;
+		}
+
+		bool operator>(const hand& other) const {
+			return !(*this < other) && !(*this == other);
+		}
+
+		bool operator==(const hand& other) const {
+			return cards == other.cards;
+		}
+};
+
+int Day7_1(vector<string>& lines) {
+	vector<hand> hands;
+	for (string line : lines) {
+		hands.push_back(hand(line, false));
+	}
+	sort(hands.begin(), hands.end());
+	int sum = 0;
+	for (int a = 0; a < hands.size(); ++a) {
+		sum += hands[a].bid * (a + 1);
+	}
+	return sum;
+}
+
+int Day7_2(vector<string>& lines) {
+	vector<hand> hands;
+	for (string line : lines) {
+		hands.push_back(hand(line, true));
+	}
+	sort(hands.begin(), hands.end());
+	int sum = 0;
+	for (int a = 0; a < hands.size(); ++a) {
+		sum += hands[a].bid * (a + 1);
+	}
+	return sum;
 }
