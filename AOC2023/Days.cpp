@@ -611,7 +611,7 @@ long long Day6_2(vector<string>& lines) {
 }
 
 #pragma endregion day6
-
+#pragma region day7
 vector<char> cardvalues {'2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A' };
 vector<char> cardvaluesJ {'J', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'Q', 'K', 'A' };
 
@@ -731,4 +731,96 @@ int Day7_2(vector<string>& lines) {
 		sum += hands[a].bid * (a + 1);
 	}
 	return sum;
+}
+#pragma endregion day7
+
+int Day8_1(vector<string>& lines) {
+	map<string, vector<string>> Maps;
+	vector<int> directions;
+	for (int a = 0; a < lines.size(); ++a) {
+		if (a == 0) {
+			for (char c : lines[a]) {
+				if (c == 'L')
+					directions.push_back(0);
+				else
+					directions.push_back(1);
+			}
+			a++;
+			continue;
+		}
+		string line = RemoveAll(lines[a],' ');
+		line = RemoveAll(line, '(');
+		line = RemoveAll(line, ')');
+		vector<string> segments;
+		Split(line, '=', segments);
+		vector<string> destinations;
+		Split(segments[1], ',', destinations);
+		Maps[segments[0]] = destinations;
+	}
+	int step = 0;
+	for (string source = "AAA"; source != "ZZZ"; ) {
+		source = Maps[source][directions[step % directions.size()]];
+		++step;
+	}
+	return step;
+}
+
+long long Day8_2(vector<string>& lines) {
+	map<string, vector<string>> Maps;
+	vector<int> directions;
+	vector<string> sources;
+	for (int a = 0; a < lines.size(); ++a) {
+		if (a == 0) {
+			for (char c : lines[a]) {
+				if (c == 'L')
+					directions.push_back(0);
+				else
+					directions.push_back(1);
+			}
+			a++;
+			continue;
+		}
+		string line = RemoveAll(lines[a], ' ');
+		line = RemoveAll(line, '(');
+		line = RemoveAll(line, ')');
+		vector<string> segments;
+		Split(line, '=', segments);
+		vector<string> destinations;
+		Split(segments[1], ',', destinations);
+		Maps[segments[0]] = destinations;
+		if (segments[0][2] == 'A')
+			sources.push_back(segments[0]);
+	}
+	long long step = 0;
+	int steptest = -1;
+	bool nonZ = false;
+	bool dotest = step % directions.size() == steptest;
+	while (true) {
+
+		nonZ = false;
+		dotest = step % directions.size() == steptest;
+
+		if (step == 1000)
+			steptest = step % directions.size();
+		//if (dotest) {
+		//	cout << "steptest:";
+		//}
+		for (int a = 0; a < sources.size(); ++a) {
+			sources[a] = Maps[sources[a]][directions[step % directions.size()]];
+			if (!nonZ && sources[a][2] != 'Z')
+				nonZ = true;
+			//if (dotest) {
+			//	cout << " " + sources[a];
+			//}
+		}
+
+		//if (dotest) {
+		//	cout << +"\n";
+		//}
+
+		++step;
+		if (!nonZ)
+			break;
+	}
+	return step;
 }
