@@ -1,9 +1,10 @@
-#include <iostream>
+﻿#include <iostream>
 #include <fstream>
 #include <string>
 #include <vector>
 #include <map>
 #include <algorithm>
+#include <functional>
 
 #include "Days.h"
 #include "Helpers.h"
@@ -230,6 +231,11 @@ struct ivec2 {
 
 public:
 
+	ivec2() {
+		X = 0;
+		Y = 0;
+	}
+
 	ivec2(int x, int y) {
 		X = x;
 		Y = y;
@@ -240,6 +246,10 @@ public:
 
 	bool operator==(const ivec2& other) const {
 		return X == other.X && Y == other.Y;
+	}
+
+	bool operator!=(const ivec2& other) const {
+		return X != other.X || Y != other.Y;
 	}
 
 	bool operator<(const ivec2& other) const {
@@ -258,7 +268,16 @@ public:
 		return false;
 	}
 
+	static ivec2 Left;
+	static ivec2 Right;
+	static ivec2 Up;
+	static ivec2 Down;
 };
+
+ivec2 ivec2::Left = ivec2(-1, 0);
+ivec2 ivec2::Right = ivec2(1, 0);
+ivec2 ivec2::Up = ivec2(0, -1);
+ivec2 ivec2::Down = ivec2(0, 1);
 
 int Day3_2(vector<string>& lines) {
 	int sum = 0;
@@ -287,7 +306,7 @@ int Day3_2(vector<string>& lines) {
 			gears[vec].number1 = stoi(value);
 		}
 
-		};
+	};
 
 	for (int a = 0; a < lines.size(); ++a) {
 		string prev;
@@ -316,7 +335,7 @@ int Day3_2(vector<string>& lines) {
 		auto checkAndAddLocation = [&](string& line, int x, int y) {
 			if (line[x] == '*' && (gearlocations.empty() || find(gearlocations.begin(), gearlocations.end(), ivec2(x, y)) == gearlocations.end()))
 				gearlocations.push_back(ivec2(x, y));
-			};
+		};
 
 		for (int b = 0; b < line.length(); ++b) {
 			char c = line[b];
@@ -555,7 +574,7 @@ int Day6_1(vector<string>& lines) {
 	vector<string> diststrings;
 	Split(TrimCopy(timesegments[1]), ' ', timestrings);
 	Split(TrimCopy(distsegments[1]), ' ', diststrings);
-	
+
 	vector<int> winningGames;
 	for (int a = 0; a < timestrings.size(); ++a) {
 		int time = stoi(timestrings[a]);
@@ -587,7 +606,7 @@ long long Day6_2(vector<string>& lines) {
 	vector<string> distsegments;
 	Split(lines[0], ':', timesegments);
 	Split(lines[1], ':', distsegments);
-	
+
 	long long time = stoll(RemoveAll(timesegments[1], ' '));
 	long long dist = stoll(RemoveAll(distsegments[1], ' '));
 
@@ -616,96 +635,98 @@ vector<char> cardvalues {'2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 
 vector<char> cardvaluesJ {'J', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'Q', 'K', 'A' };
 
 class hand {
-	public:
-		int bid;
-		string cards;
-		int values[5];
+public:
+	int type = 0;
+	int bid;
+	string cards;
+	int values[5];
 
-		int type = 0;
+	hand(string input, bool Jmode) {
+		vector<string> segments;
+		Split(input, ' ', segments);
+		cards = segments[0];
+		bid = stoi(segments[1]);
+		map<char, int> chars;
+		int maxcardcount = 0;
+		int jCount = 0;
 
-		hand(string input, bool Jmode) {
-			vector<string> segments;
-			Split(input, ' ', segments);
-			cards = segments[0];
-			bid = stoi(segments[1]);
-			map<char, int> chars;
-			int maxcardcount = 0;
-			int jCount = 0;
-			
-			for (int a = 0; a < 5; ++a) {
-				if (chars.find(cards[a]) == chars.end())
-					chars[cards[a]] = 1;
-				else
-					chars[cards[a]] += 1;
+		for (int a = 0; a < 5; ++a) {
+			if (chars.find(cards[a]) == chars.end())
+				chars[cards[a]] = 1;
+			else
+				chars[cards[a]] += 1;
 
-				if (chars[cards[a]] > maxcardcount)
-					maxcardcount = chars[cards[a]];
+			if (chars[cards[a]] > maxcardcount)
+				maxcardcount = chars[cards[a]];
 
-				if (Jmode && cards[a] == 'J')
-					jCount++;
+			if (Jmode && cards[a] == 'J')
+				jCount++;
 
-				if(Jmode)
-					values[a] = find(cardvaluesJ.begin(), cardvaluesJ.end(), cards[a]) - cardvaluesJ.begin();
-				else
-					values[a] = find(cardvalues.begin(), cardvalues.end(), cards[a]) - cardvalues.begin();
-			}
+			if (Jmode)
+				values[a] = find(cardvaluesJ.begin(), cardvaluesJ.end(), cards[a]) - cardvaluesJ.begin();
+			else
+				values[a] = find(cardvalues.begin(), cardvalues.end(), cards[a]) - cardvalues.begin();
+		}
 
-			switch (chars.size()) {
-			case 1:
+		switch (chars.size()) {
+		case 1:
+			type = 6;
+			break;
+		case 2:
+			if (jCount > 0)
 				type = 6;
-				break;
-			case 2:
-				if (jCount > 0)
-					type = 6;
-				else if (maxcardcount == 4)
-					type = 5;
-				else
-					type = 4;
-				break;
-			case 3:
-				if (jCount > 1 || (maxcardcount == 3 && jCount == 1))
-					type = 5;
-				else if (maxcardcount == 3 || jCount == 1)
-					type = 3;
-				else
-					type = 2;
-				break;
-			case 4:
-				if (jCount > 0)
-					type = 3;
-				else
-					type = 1;
-				break;
-			case 5:
-				if (jCount > 0)
-					type = 1;
-				else
-					type = 0;
-				break;
-			}
-
+			else if (maxcardcount == 4)
+				type = 5;
+			else
+				type = 4;
+			break;
+		case 3:
+			if (jCount > 1 || (maxcardcount == 3 && jCount == 1))
+				type = 5;
+			else if (jCount == 1)
+				type = 4;
+			else if (maxcardcount == 3)
+				type = 3;
+			else
+				type = 2;
+			break;
+		case 4:
+			if (jCount > 0)
+				type = 3;
+			else
+				type = 1;
+			break;
+		case 5:
+			if (jCount > 0)
+				type = 1;
+			else
+				type = 0;
+			break;
 		}
 
-		bool operator<(const hand& other) const {
-			if (type != other.type)
-				return type < other.type;
+	}
 
-			for (int a = 0; a < 5; ++a) {
-				if (values[a] == other.values[a])
-					continue;
-				return values[a] < other.values[a];
-			}
-			return false;
-		}
+	bool operator<(const hand& other) const {
+		if (type != other.type)
+			return type < other.type;
 
-		bool operator>(const hand& other) const {
-			return !(*this < other) && !(*this == other);
+		for (int a = 0; a < 5; ++a) {
+			if (values[a] == other.values[a])
+				continue;
+			return values[a] < other.values[a];
 		}
+		return false;
+	}
 
-		bool operator==(const hand& other) const {
-			return cards == other.cards;
-		}
+	bool operator>(const hand& other) const {
+		return !(*this < other) && !(*this == other);
+	}
+
+	bool operator==(const hand& other) const {
+		return cards == other.cards;
+	}
 };
+
 
 int Day7_1(vector<string>& lines) {
 	vector<hand> hands;
@@ -728,12 +749,13 @@ int Day7_2(vector<string>& lines) {
 	sort(hands.begin(), hands.end());
 	int sum = 0;
 	for (int a = 0; a < hands.size(); ++a) {
+		cout << hands[a].cards + " " << hands[a].type << "\n";
 		sum += hands[a].bid * (a + 1);
 	}
 	return sum;
 }
 #pragma endregion day7
-
+#pragma region day8
 int Day8_1(vector<string>& lines) {
 	map<string, vector<string>> Maps;
 	vector<int> directions;
@@ -748,7 +770,7 @@ int Day8_1(vector<string>& lines) {
 			a++;
 			continue;
 		}
-		string line = RemoveAll(lines[a],' ');
+		string line = RemoveAll(lines[a], ' ');
 		line = RemoveAll(line, '(');
 		line = RemoveAll(line, ')');
 		vector<string> segments;
@@ -795,32 +817,464 @@ long long Day8_2(vector<string>& lines) {
 	int steptest = -1;
 	bool nonZ = false;
 	bool dotest = step % directions.size() == steptest;
+	vector<string> steptestdata;
+	vector<long long> steptestrepeatstepdiff;
+	vector<long long> steptestzloc;
+	int steptestrepeatstepdiffcount = 0;
+	long long maxinterval = -1;
+	long long maxstart = -1;
 	while (true) {
 
-		nonZ = false;
 		dotest = step % directions.size() == steptest;
 
-		if (step == 1000)
+		if (step == directions.size()) {
 			steptest = step % directions.size();
-		//if (dotest) {
-		//	cout << "steptest:";
-		//}
-		for (int a = 0; a < sources.size(); ++a) {
-			sources[a] = Maps[sources[a]][directions[step % directions.size()]];
-			if (!nonZ && sources[a][2] != 'Z')
-				nonZ = true;
-			//if (dotest) {
-			//	cout << " " + sources[a];
-			//}
+			cout << "steptest:";
+			for (int a = 0; a < sources.size(); ++a) {
+				cout << " " + sources[a];
+			}
+			cout << "\n";
+		}
+		else if (dotest) {
+			for (int a = 0; a < sources.size(); ++a) {
+				if (sources[a] == steptestdata[a] && steptestrepeatstepdiff[a] < 0) {
+					steptestrepeatstepdiff[a] = step - directions.size();
+					if (steptestrepeatstepdiff[a] > maxinterval) {
+						maxinterval = steptestrepeatstepdiff[a];
+						maxstart = steptestzloc[a] + directions.size();
+					}
+					steptestrepeatstepdiffcount++;
+					cout << "source " + to_string(a) + " steptest repeat at step " + to_string(step) + " with offset " + to_string(steptestrepeatstepdiff[a]) + ". that is now " + to_string(steptestrepeatstepdiffcount) + "/" + to_string(steptestrepeatstepdiff.size()) + "\n";
+					cout << "z loc inside: " + to_string(steptestzloc[a]) + "\n";
+				}
+			}
 		}
 
-		//if (dotest) {
-		//	cout << +"\n";
-		//}
+		int zcount = 0;
+		for (int a = 0; a < sources.size(); ++a) {
+			if (step == directions.size()) {
+				steptestdata.push_back(sources[a]);
+				steptestrepeatstepdiff.push_back(-1);
+				steptestzloc.push_back(-1);
+			}
+
+			sources[a] = Maps[sources[a]][directions[step % directions.size()]];
+			if (sources[a][2] == 'Z') {
+				zcount++;
+				if (steptest >= 0 && steptestrepeatstepdiff[a] < 0) {
+					steptestzloc[a] = step - directions.size();
+				}
+			}
+		}
+
+		if (steptestrepeatstepdiffcount == sources.size())
+			break;
 
 		++step;
-		if (!nonZ)
-			break;
 	}
-	return step;
+
+	step = maxstart;
+	bool noZ = true;
+	while (noZ) {
+		step += maxinterval;
+		noZ = false;
+		long long internalstep = step - directions.size();
+		for (int a = 0; a < steptestrepeatstepdiff.size(); ++a) {
+			if (internalstep % steptestrepeatstepdiff[a] != steptestzloc[a]) {
+				noZ = true;
+				break;
+			}
+		}
+	}
+
+	return step + 1;
+}
+#pragma endregion day8
+#pragma region day9
+int Day9AddNextValue(vector<int>& values) {
+	if (Sum(values) == 0) {
+		values.push_back(0);
+		return 0;
+	}
+	else {
+		vector<int> nextvalues;
+		for (int a = 1; a < values.size(); ++a) {
+			nextvalues.push_back(values[a] - values[a - 1]);
+		}
+		return values[values.size() - 1] + Day9AddNextValue(nextvalues);
+	}
+}
+
+int Day9AddPrevValue(vector<int>& values) {
+	if (Sum(values) == 0) {
+		values.push_back(0);
+		return 0;
+	}
+	else {
+		vector<int> nextvalues;
+		for (int a = 1; a < values.size(); ++a) {
+			nextvalues.push_back(values[a] - values[a - 1]);
+		}
+		return values[0] - Day9AddPrevValue(nextvalues);
+	}
+}
+
+int Day9_1(vector<string>& lines) {
+	int sum = 0;
+	for (string line : lines) {
+		vector<int> values;
+		SplitToInt(line, ' ', values);
+		sum += Day9AddNextValue(values);
+	}
+	return sum;
+}
+
+int Day9_2(vector<string>& lines) {
+	int sum = 0;
+	for (string line : lines) {
+		vector<int> values;
+		SplitToInt(line, ' ', values);
+		sum += Day9AddPrevValue(values);
+	}
+	return sum;
+}
+#pragma endregion day9
+
+ivec2 Day10GetOutDir(char c, ivec2 inDir) {
+	switch (c) {
+	case '|':
+		if (inDir.Y < 0)
+			return ivec2::Up;
+		if (inDir.Y > 0)
+			return ivec2::Down;
+		break;
+	case '-':
+		if (inDir.X < 0)
+			return ivec2::Left;
+		if (inDir.X > 0)
+			return ivec2::Right;
+		break;
+	case 'L':
+		if (inDir.Y > 0)
+			return ivec2::Right;
+		if (inDir.X < 0)
+			return ivec2::Up;
+		break;
+	case 'J':
+		if (inDir.Y > 0)
+			return ivec2::Left;
+		if (inDir.X > 0)
+			return ivec2::Up;
+		break;
+	case 'F':
+		if (inDir.Y < 0)
+			return ivec2::Right;
+		if (inDir.X < 0)
+			return ivec2::Down;
+		break;
+	case '7':
+		if (inDir.Y < 0)
+			return ivec2::Left;
+		if (inDir.X > 0)
+			return ivec2::Down;
+		break;
+	}
+	return ivec2(0, 0);
+}
+
+int Day10_1(vector<string>& lines) {
+	const int height = lines.size();
+	const int width = lines[0].length();
+	string pipemap = Combine(lines);
+	const int totallength = pipemap.length();
+	vector<int> distancemap = vector<int>(totallength, 0);
+	const int startpos = find(pipemap.begin(), pipemap.end(), 'S') - pipemap.begin();
+	distancemap[startpos] = -1;
+	const int startx = startpos % width;
+	const int starty = startpos / width;
+	bool startl = startx > 0 && Day10GetOutDir(pipemap[startpos - 1], ivec2::Left) != ivec2(0, 0);
+	bool startr = startx < width - 1 && Day10GetOutDir(pipemap[startpos + 1], ivec2::Right) != ivec2(0, 0);
+	bool startu = starty > 0 && Day10GetOutDir(pipemap[startpos - width], ivec2::Up) != ivec2(0, 0);
+	bool startd = starty < height - 1 && Day10GetOutDir(pipemap[startpos + width], ivec2::Down) != ivec2(0, 0);
+
+	ivec2 next1;
+	ivec2 next2;
+	if (startl && startr) {
+		pipemap[startpos] = '-';
+		next1 = ivec2::Left;
+		next2 = ivec2::Right;
+	}
+	else if (startu && startd) {
+		pipemap[startpos] = '|';
+		next1 = ivec2::Up;
+		next2 = ivec2::Down;
+	}
+	else if (startl && startu) {
+		pipemap[startpos] = 'J';
+		next1 = ivec2::Left;
+		next2 = ivec2::Up;
+	}
+	else if (startl && startd) {
+		pipemap[startpos] = '7';
+		next1 = ivec2::Left;
+		next2 = ivec2::Down;
+	}
+	else if (startr && startu) {
+		pipemap[startpos] = 'L';
+		next1 = ivec2::Up;
+		next2 = ivec2::Right;
+	}
+	else if (startr && startd) {
+		pipemap[startpos] = 'F';
+		next1 = ivec2::Down;
+		next2 = ivec2::Right;
+	}
+
+	int a = 0;
+	int pos1 = startpos;
+	int pos2 = startpos;
+	bool active1 = true;
+	bool active2 = true;
+	while (active1 || active2) {
+		a++;
+		if (active1) {
+			pos1 = pos1 + width * next1.Y + next1.X;
+			distancemap[pos1] = a;
+			next1 = Day10GetOutDir(pipemap[pos1], next1);
+		}
+		if (active2) {
+			pos2 = pos2 + width * next2.Y + next2.X;
+			distancemap[pos2] = a;
+			next2 = Day10GetOutDir(pipemap[pos2], next2);
+		}
+
+		active1 = distancemap[pos1 + width * next1.Y + next1.X] == 0;
+		active2 = distancemap[pos2 + width * next2.Y + next2.X] == 0;
+	}
+
+	for (int y = 0; y < height; ++y) {
+		for (int x = 0; x < width; ++x) {
+			if (x + y * width == startpos)
+				cout << 'O';
+			else if (distancemap[x + y * width] == a)
+				cout << 'X';
+			else if (distancemap[x + y * width] != 0)
+				cout << pipemap[x + y * width];
+			else
+				cout << ' ';
+		}
+		cout << "\n";
+	}
+
+	return a;
+}
+
+int Day10_2(vector<string>& lines) {
+	const int height = lines.size();
+	const int width = lines[0].length();
+	string pipemap = Combine(lines);
+	const int totallength = pipemap.length();
+	vector<int> distancemap = vector<int>(totallength, 0);
+	const int startpos = find(pipemap.begin(), pipemap.end(), 'S') - pipemap.begin();
+	distancemap[startpos] = -1;
+	const int startx = startpos % width;
+	const int starty = startpos / width;
+	bool startl = startx > 0 && Day10GetOutDir(pipemap[startpos - 1], ivec2::Left) != ivec2(0, 0);
+	bool startr = startx < width - 1 && Day10GetOutDir(pipemap[startpos + 1], ivec2::Right) != ivec2(0, 0);
+	bool startu = starty > 0 && Day10GetOutDir(pipemap[startpos - width], ivec2::Up) != ivec2(0, 0);
+	bool startd = starty < height - 1 && Day10GetOutDir(pipemap[startpos + width], ivec2::Down) != ivec2(0, 0);
+
+	ivec2 next1;
+	ivec2 next2;
+	if (startl && startr) {
+		pipemap[startpos] = '-';
+		next1 = ivec2::Left;
+		next2 = ivec2::Right;
+	}
+	else if (startu && startd) {
+		pipemap[startpos] = '|';
+		next1 = ivec2::Up;
+		next2 = ivec2::Down;
+	}
+	else if (startl && startu) {
+		pipemap[startpos] = 'J';
+		next1 = ivec2::Left;
+		next2 = ivec2::Up;
+	}
+	else if (startl && startd) {
+		pipemap[startpos] = '7';
+		next1 = ivec2::Left;
+		next2 = ivec2::Down;
+	}
+	else if (startr && startu) {
+		pipemap[startpos] = 'L';
+		next1 = ivec2::Up;
+		next2 = ivec2::Right;
+	}
+	else if (startr && startd) {
+		pipemap[startpos] = 'F';
+		next1 = ivec2::Down;
+		next2 = ivec2::Right;
+	}
+
+	int a = 0;
+	int pos1 = startpos;
+	int pos2 = startpos;
+	bool active1 = true;
+	bool active2 = true;
+	while (active1 || active2) {
+		a++;
+		if (active1) {
+			pos1 = pos1 + width * next1.Y + next1.X;
+			distancemap[pos1] = a;
+			next1 = Day10GetOutDir(pipemap[pos1], next1);
+		}
+		if (active2) {
+			pos2 = pos2 + width * next2.Y + next2.X;
+			distancemap[pos2] = a;
+			next2 = Day10GetOutDir(pipemap[pos2], next2);
+		}
+
+		active1 = distancemap[pos1 + width * next1.Y + next1.X] == 0;
+		active2 = distancemap[pos2 + width * next2.Y + next2.X] == 0;
+	}
+
+	// 0 = free; 1 = blocked; 2 = starter; 3 = possibly enclosed; 4 = outside
+	vector<int> gapmap = vector<int>(totallength * 9, 0);
+
+	vector<ivec2> fieldsToDo;
+
+	for (int y = 0; y < height; ++y) {
+		for (int x = 0; x < width; ++x) {
+			if (distancemap[x + y * width] > 0 || (startx == x && y == starty)) {
+				switch (pipemap[x + y * width]) {
+				case '|':
+					gapmap[x * 3 + 1 + (y * 3 + 0) * width * 3] = 1;
+					gapmap[x * 3 + 1 + (y * 3 + 1) * width * 3] = 1;
+					gapmap[x * 3 + 1 + (y * 3 + 2) * width * 3] = 1;
+					break;
+				case '-':
+					gapmap[x * 3 + 0 + (y * 3 + 1) * width * 3] = 1;
+					gapmap[x * 3 + 1 + (y * 3 + 1) * width * 3] = 1;
+					gapmap[x * 3 + 2 + (y * 3 + 1) * width * 3] = 1;
+					break;
+				case 'L':
+					gapmap[x * 3 + 1 + (y * 3 + 0) * width * 3] = 1;
+					gapmap[x * 3 + 1 + (y * 3 + 1) * width * 3] = 1;
+					gapmap[x * 3 + 2 + (y * 3 + 1) * width * 3] = 1;
+					break;
+				case 'J':
+					gapmap[x * 3 + 1 + (y * 3 + 0) * width * 3] = 1;
+					gapmap[x * 3 + 1 + (y * 3 + 1) * width * 3] = 1;
+					gapmap[x * 3 + 0 + (y * 3 + 1) * width * 3] = 1;
+					break;
+				case 'F':
+					gapmap[x * 3 + 1 + (y * 3 + 2) * width * 3] = 1;
+					gapmap[x * 3 + 1 + (y * 3 + 1) * width * 3] = 1;
+					gapmap[x * 3 + 2 + (y * 3 + 1) * width * 3] = 1;
+					break;
+				case '7':
+					gapmap[x * 3 + 1 + (y * 3 + 2) * width * 3] = 1;
+					gapmap[x * 3 + 1 + (y * 3 + 1) * width * 3] = 1;
+					gapmap[x * 3 + 0 + (y * 3 + 1) * width * 3] = 1;
+					break;
+				}
+			}
+			else {
+				gapmap[x * 3 + 1 + (y * 3 + 1) * width * 3] = 3;
+			}
+
+			auto addStart = [&](int sx, int sy) {
+				if (gapmap[sx + sy * width * 3] == 0) {
+					gapmap[sx + sy * width * 3] = 2;
+					fieldsToDo.push_back(ivec2(sx, sy));
+				}
+			};
+
+			if (x == 0) {
+				addStart(x * 3 + 0, y * 3 + 0);
+				addStart(x * 3 + 0, y * 3 + 1);
+				addStart(x * 3 + 0, y * 3 + 2);
+			}
+			if (x == width - 1) {
+				addStart(x * 3 + 2, y * 3 + 0);
+				addStart(x * 3 + 2, y * 3 + 1);
+				addStart(x * 3 + 2, y * 3 + 2);
+			}
+			if (y == 0) {
+				addStart(x * 3 + 0, y * 3 + 0);
+				addStart(x * 3 + 1, y * 3 + 0);
+				addStart(x * 3 + 2, y * 3 + 0);
+			}
+			if (y == height - 1) {
+				addStart(x * 3 + 0, y * 3 + 2);
+				addStart(x * 3 + 1, y * 3 + 2);
+				addStart(x * 3 + 2, y * 3 + 2);
+			}
+		}
+	}
+
+	for (int y = 0; y < height * 3; ++y) {
+		for (int x = 0; x < width * 3; ++x) {
+			switch (gapmap[x + y * width * 3]) {
+			case 0:
+				cout << ' ';
+				break;
+			case 1:
+				cout << 'X';
+				break;
+			case 4:
+				cout << '.';
+				break;
+			default:
+				cout << to_string(gapmap[x + y * width * 3]);
+				break;
+			}
+		}
+		cout << '\n';
+	}
+
+	while (fieldsToDo.size() > 0) {
+		ivec2 field = fieldsToDo.back();
+		fieldsToDo.pop_back();
+
+		switch (gapmap[field.X + field.Y * width * 3]) {
+		case 4:
+		case 1:
+			break;
+		default:
+			gapmap[field.X + field.Y * width * 3] = 4;
+			if (field.X > 0)
+				fieldsToDo.push_back(ivec2(field.X - 1, field.Y));
+			if (field.X < width * 3 - 1)
+				fieldsToDo.push_back(ivec2(field.X + 1, field.Y));
+			if (field.Y > 0)
+				fieldsToDo.push_back(ivec2(field.X, field.Y - 1));
+			if (field.Y < height * 3 - 1)
+				fieldsToDo.push_back(ivec2(field.X, field.Y + 1));
+			break;
+		}
+	}
+
+	for (int y = 0; y < height * 3; ++y) {
+		for (int x = 0; x < width * 3; ++x) {
+			switch (gapmap[x + y * width * 3]) {
+			case 0:
+				cout << ' ';
+				break;
+			case 1:
+				cout << 'X';
+				break;
+			case 4:
+				cout << '.';
+				break;
+			default:
+				cout << to_string(gapmap[x + y * width * 3]);
+				break;
+			}
+		}
+		cout << '\n';
+	}
+
+	return count(gapmap.begin(),gapmap.end(),3);
 }

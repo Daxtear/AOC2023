@@ -143,6 +143,7 @@
     <Text Include="Day1.txt">
       <DeploymentContent>true</DeploymentContent>
     </Text>
+    <Text Include="Day10.txt" />
     <Text Include="Day2.txt" />
     <Text Include="Day3.txt" />
     <Text Include="Day4.txt" />
@@ -150,6 +151,7 @@
     <Text Include="Day6.txt" />
     <Text Include="Day7.txt" />
     <Text Include="Day8.txt" />
+    <Text Include="Day9.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

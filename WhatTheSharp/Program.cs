@@ -3,11 +3,12 @@
 namespace WhatTheSharp {
 	internal class Program {
 		static void Main(string[] args) {
-			Almanac al = new Almanac(File.ReadAllLines("Day5.txt"));
-			var locs = al.Seeds.Select(seed => {
-				return al.GetMapping(6, al.GetMapping(5, al.GetMapping(4, al.GetMapping(3, al.GetMapping(2, al.GetMapping(1, al.GetMapping(0, seed)))))));
-				});
-			Console.WriteLine(locs.Min());
+			//Almanac al = new Almanac(File.ReadAllLines("Day5.txt"));
+			//var locs = al.Seeds.Select(seed => {
+			//	return al.GetMapping(6, al.GetMapping(5, al.GetMapping(4, al.GetMapping(3, al.GetMapping(2, al.GetMapping(1, al.GetMapping(0, seed)))))));
+			//	});
+			//Console.WriteLine(locs.Min());
+			NicksSolutions.Day7_2();
 		}
 	}
 

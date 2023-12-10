@@ -3,6 +3,14 @@
 
 #include "Helpers.h"
 
+string Combine(vector<string>& strings) {
+	string str = "";
+	for (string s : strings) {
+		str += s;
+	}
+	return str;
+}
+
 void Split(string str, char separator, vector<string>& strings) {
 	int startIndex = 0, endIndex = 0;
 	for (int i = 0; i <= str.size(); i++) {
@@ -14,6 +22,24 @@ void Split(string str, char separator, vector<string>& strings) {
 				string temp;
 				temp.append(str, startIndex, endIndex - startIndex);
 				strings.push_back(temp);
+			}
+			startIndex = endIndex + 1;
+		}
+	}
+
+}
+
+void SplitToInt(string str, char separator, vector<int>& ints) {
+	int startIndex = 0, endIndex = 0;
+	for (int i = 0; i <= str.size(); i++) {
+
+		// If we reached the end of the word or the end of the input.
+		if (str[i] == separator || i == str.size()) {
+			endIndex = i;
+			if (endIndex != startIndex) {
+				string temp;
+				temp.append(str, startIndex, endIndex - startIndex);
+				ints.push_back(stoi(temp));
 			}
 			startIndex = endIndex + 1;
 		}

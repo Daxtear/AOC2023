@@ -12,47 +12,57 @@ using namespace std;
 
 int main()
 {
-    //vector<string> day1Data;
-    //ReadFile("Day1.txt",day1Data);
-    //int day1_1 = Day1_1(day1Data);
-    //int day1_2 = Day1_2(day1Data);
+	//vector<string> day1Data;
+	//ReadFile("Day1.txt",day1Data);
+	//int day1_1 = Day1_1(day1Data);
+	//int day1_2 = Day1_2(day1Data);
 
-    //vector<string> day2Data;
-    //ReadFile("Day2.txt",day2Data);
-    //int day2_1 = Day2_1(day2Data);
-    //int day2_2 = Day2_2(day2Data);
+	//vector<string> day2Data;
+	//ReadFile("Day2.txt",day2Data);
+	//int day2_1 = Day2_1(day2Data);
+	//int day2_2 = Day2_2(day2Data);
 
-    //vector<string> day3Data;
-    //ReadFile("Day3.txt",day3Data);
-    //int day3_1 = Day3_1(day3Data);
-    //int day3_2 = Day3_2(day3Data);
+	//vector<string> day3Data;
+	//ReadFile("Day3.txt",day3Data);
+	//int day3_1 = Day3_1(day3Data);
+	//int day3_2 = Day3_2(day3Data);
 
-    //vector<string> day4Data;
-    //ReadFile("Day4.txt", day4Data);
-    //int day4_1 = Day4_1(day4Data);
-    //int day4_2 = Day4_2(day4Data);
+	//vector<string> day4Data;
+	//ReadFile("Day4.txt", day4Data);
+	//int day4_1 = Day4_1(day4Data);
+	//int day4_2 = Day4_2(day4Data);
 
-    //vector<string> day5Data;
-    //ReadFile("Day5.txt", day5Data);
-    //long long day5_1 = Day5_1(day5Data);
-    //long long day5_2 = Day5_2(day5Data);
+	//vector<string> day5Data;
+	//ReadFile("Day5.txt", day5Data);
+	//long long day5_1 = Day5_1(day5Data);
+	//long long day5_2 = Day5_2(day5Data);
 
-    //vector<string> day6Data;
-    //ReadFile("Day6.txt", day6Data);
-    //int day6_1 = Day6_1(day6Data);
-    //long long day6_2 = Day6_2(day6Data);
+	//vector<string> day6Data;
+	//ReadFile("Day6.txt", day6Data);
+	//int day6_1 = Day6_1(day6Data);
+	//long long day6_2 = Day6_2(day6Data);
 
-    //vector<string> day7Data;
-    //ReadFile("Day7.txt", day7Data);
-    //int day7_1 = Day7_1(day7Data);
-    //int day7_2 = Day7_2(day7Data
-   
-    vector<string> day8Data;
-    ReadFile("Day8.txt", day8Data);
-    //int day8_1 = Day8_1(day8Data);
-    long long day8_2 = Day8_2(day8Data);
+	//vector<string> day7Data;
+	//ReadFile("Day7.txt", day7Data);
+	//int day7_1 = Day7_1(day7Data);
+	//int day7_2 = Day7_2(day7Data);
 
-    cout << to_string(day8_2) + "\r\n";
+	//vector<string> day8Data;
+	//ReadFile("Day8.txt", day8Data);
+	//int day8_1 = Day8_1(day8Data);
+	//long long day8_2 = Day8_2(day8Data);
+
+	//vector<string> day9Data;
+	//ReadFile("Day9.txt", day9Data);
+	//int day9_1 = Day9_1(day9Data);
+	//int day9_2 = Day9_2(day9Data);
+
+	vector<string> day10Data;
+	ReadFile("Day10.txt", day10Data);
+	//int day10_1 = Day10_1(day10Data);
+	int day10_2 = Day10_2(day10Data);
+
+	cout << to_string(day10_2) + "\r\n";
 }
 
 // Programm ausführen: STRG+F5 oder Menüeintrag "Debuggen" > "Starten ohne Debuggen starten"

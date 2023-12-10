@@ -22,3 +22,7 @@ int Day7_1(vector<string>& lines);
 int Day7_2(vector<string>& lines);
 int Day8_1(vector<string>& lines);
 long long Day8_2(vector<string>& lines);
+int Day9_1(vector<string>& lines);
+int Day9_2(vector<string>& lines);
+int Day10_1(vector<string>& lines);
+int Day10_2(vector<string>& lines);

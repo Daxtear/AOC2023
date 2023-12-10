@@ -5,7 +5,10 @@
 
 using namespace std;
 
+string Combine(vector<string>& strings);
 void Split(string str, char seperator, vector<string>& segments);
+void SplitToInt(string str, char seperator, vector<int>& segments);
+
 void ReadFile(const char* filename, vector<string>& lines);
 
 int Sum(vector<int> ints);
