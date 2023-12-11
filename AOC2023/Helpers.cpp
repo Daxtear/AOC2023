@@ -11,6 +11,14 @@ string Combine(vector<string>& strings) {
 	return str;
 }
 
+string* CombineOnHeap(vector<string>& strings) {
+	string* str = new string();
+	for (string s : strings) {
+		*str += s;
+	}
+	return str;
+}
+
 void Split(string str, char separator, vector<string>& strings) {
 	int startIndex = 0, endIndex = 0;
 	for (int i = 0; i <= str.size(); i++) {

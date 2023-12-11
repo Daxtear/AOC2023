@@ -939,7 +939,7 @@ int Day9_2(vector<string>& lines) {
 	return sum;
 }
 #pragma endregion day9
-
+#pragma region day10
 ivec2 Day10GetOutDir(char c, ivec2 inDir) {
 	switch (c) {
 	case '|':
@@ -1277,4 +1277,215 @@ int Day10_2(vector<string>& lines) {
 	}
 
 	return count(gapmap.begin(),gapmap.end(),3);
+}
+#pragma endregion day10
+
+template <typename T>
+struct NonspecificPair {
+public:
+	T Value1;
+	T Value2;
+
+	NonspecificPair(T value1, T value2) {
+		Value1 = value1;
+		Value2 = value2;
+	}
+
+	bool operator==(const NonspecificPair& other) const {
+		return (Value1 == other.Value1 && Value2 == other.Value2) || (Value1 == other.Value2 && Value2 == other.Value1);
+	}
+
+	bool operator<(const NonspecificPair& other) const {
+		T minvalue = min(Value1, Value2);
+		T otherminvalue = min(other.Value1, other.Value2);
+
+		if (minvalue < otherminvalue)
+			return true;
+		else if (minvalue == otherminvalue) {
+			T maxvalue = max(Value1, Value2);
+			T othermaxvalue = max(other.Value1, other.Value2);
+			if (maxvalue < othermaxvalue)
+				return true;
+		}
+
+		return false;
+	}
+
+	bool operator<=(const NonspecificPair& other) const {
+		return *this < other || *this == other;
+	}
+
+	bool operator>(const NonspecificPair& other) const {
+		return !(*this <= other);
+	}
+
+	bool operator>=(const NonspecificPair& other) const {
+		return *this > other || *this == other;
+	}
+};
+
+class Chart {
+public:
+
+	string* Data;
+
+	long long Height;
+	long long Width;
+
+	Chart(vector<string> rows) {
+		Data = CombineOnHeap(rows);
+		Height = rows.size();
+		Width = rows[0].length();
+	}
+
+	string GetRow(long long row) {
+		return Data->substr(row * Width, Width);
+	}
+
+	string GetColumn(long long column) {
+		string str = "";
+		for (long long a = 0; a < Height; ++a) {
+			str += Data[column + a * Width];
+		}
+		return str;
+	}
+
+	void InsertRow(long long index, char initializer, int count = 1) {
+		Data->insert(index * Width, Width * count, '.');
+	}
+
+	void InsertRow(long long index, string values, int count = 1) {
+		for(int a = 0; a < count; ++a)
+			Data = &Data->insert(index * Width, values);
+		Height += count;
+	}
+
+	void InsertColumn(long long index, char initializer, int count = 1) {
+		string str = "";
+		for (long long a = 0; a < Height; ++a) {
+			str += initializer;
+		}
+		InsertColumn(index, str, count);
+	}
+
+	void InsertColumn(long long index, string values, int count = 1) {
+		Width += count;
+		for (long long a = 0; a < values.length(); ++a) {
+			Data = &Data->insert(index + a * Width, count, values[a]);
+		}
+	}
+
+	char GetValue(long long x, long long y) {
+		return (*Data)[x + y * Width];
+	}
+};
+
+ostream& operator<<(ostream& os, Chart& obj) {
+	for (long long a = 0; a < obj.Height; ++a) {
+		os << obj.GetRow(a) + '\n';
+	}
+	return os;
+}
+
+long long Day11_1(vector<string>& lines) {
+	map<NonspecificPair<ivec2>, int> Distances;
+	vector<ivec2> Galaxies;
+	Chart chart = Chart(lines);
+
+	for (int a = 0; a < chart.Height; ++a) {
+		string row = chart.GetRow(a);
+		if (row.find('#') == string::npos) {
+			chart.InsertRow(a, '.');
+			++a;
+		}
+	}
+
+	for (int a = 0; a < chart.Width; ++a) {
+		string col = chart.GetColumn(a);
+		if (col.find('#') == string::npos) {
+			chart.InsertColumn(a, '.');
+			++a;
+		}
+		else {
+			int gxid = col.find('#');
+			while (gxid != string::npos) {
+				Galaxies.push_back(ivec2(a,gxid));
+				gxid = col.find('#',gxid + 1);
+			}
+		}
+	}
+
+	long long sum = 0;
+
+	for (ivec2 galaxy : Galaxies) {
+		for (ivec2 galaxy2 : Galaxies) {
+			if (galaxy == galaxy2)
+				continue;
+
+			NonspecificPair<ivec2> pair = NonspecificPair<ivec2>(galaxy, galaxy2);
+
+			if (Distances.find(pair) == Distances.end()) {
+				int dist = abs(galaxy.X - galaxy2.X) + abs(galaxy.Y - galaxy2.Y);
+				Distances[pair] == dist;
+				sum += dist;
+			}
+		}
+	}
+
+	cout << chart;
+	return sum;
+}
+
+long long Day11_2(vector<string>& lines) {
+	map<NonspecificPair<ivec2>, long long> Distances;
+	vector<ivec2> Galaxies;
+	Chart chart = Chart(lines);
+
+
+	for (long long a = 0; a < chart.Width; ++a) {
+		string col = chart.GetColumn(a);
+		if (col.find('#') == string::npos) {
+			cout << "Empty Column Found: " << a << '\n';
+			chart.InsertColumn(a, '.', 999999);
+			a += 999999;
+			cout << "Done\n";
+		}
+	}
+
+	for (long long a = 0; a < chart.Height; ++a) {
+		string row = chart.GetRow(a);
+		if (row.find('#') == string::npos) {
+			cout << "Empty Row Found: " << a << '\n';
+			chart.InsertRow(a, '.', 999999);
+			a += 999999;
+			cout << "Done\n";
+		}
+		else {
+			long long gxid = row.find('#');
+			while (gxid != string::npos) {
+				Galaxies.push_back(ivec2(gxid, a));
+				gxid = row.find('#', gxid + 1);
+			}
+		}
+	}
+
+	long long sum = 0;
+
+	for (ivec2 galaxy : Galaxies) {
+		for (ivec2 galaxy2 : Galaxies) {
+			if (galaxy == galaxy2)
+				continue;
+
+			NonspecificPair<ivec2> pair = NonspecificPair<ivec2>(galaxy, galaxy2);
+
+			if (Distances.find(pair) == Distances.end()) {
+				long long dist = abs(galaxy.X - galaxy2.X) + abs(galaxy.Y - galaxy2.Y);
+				Distances[pair] == dist;
+				sum += dist;
+			}
+		}
+	}
+
+	//cout << chart;
+	return sum;
 }
