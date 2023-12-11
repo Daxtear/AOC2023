@@ -1327,19 +1327,19 @@ public:
 class Chart {
 public:
 
-	string* Data;
+	string Data;
 
 	long long Height;
 	long long Width;
 
 	Chart(vector<string> rows) {
-		Data = CombineOnHeap(rows);
+		Data = Combine(rows);
 		Height = rows.size();
 		Width = rows[0].length();
 	}
 
 	string GetRow(long long row) {
-		return Data->substr(row * Width, Width);
+		return Data.substr(row * Width, Width);
 	}
 
 	string GetColumn(long long column) {
@@ -1351,12 +1351,12 @@ public:
 	}
 
 	void InsertRow(long long index, char initializer, int count = 1) {
-		Data->insert(index * Width, Width * count, '.');
+		Data.insert(index * Width, Width * count, '.');
 	}
 
 	void InsertRow(long long index, string values, int count = 1) {
 		for(int a = 0; a < count; ++a)
-			Data = &Data->insert(index * Width, values);
+			Data = Data.insert(index * Width, values);
 		Height += count;
 	}
 
@@ -1371,12 +1371,12 @@ public:
 	void InsertColumn(long long index, string values, int count = 1) {
 		Width += count;
 		for (long long a = 0; a < values.length(); ++a) {
-			Data = &Data->insert(index + a * Width, count, values[a]);
+			Data = Data.insert(index + a * Width, count, values[a]);
 		}
 	}
 
 	char GetValue(long long x, long long y) {
-		return (*Data)[x + y * Width];
+		return Data[x + y * Width];
 	}
 };
 
@@ -1437,34 +1437,29 @@ long long Day11_1(vector<string>& lines) {
 }
 
 long long Day11_2(vector<string>& lines) {
-	map<NonspecificPair<ivec2>, long long> Distances;
+	map<NonspecificPair<ivec2>, int> Distances;
 	vector<ivec2> Galaxies;
 	Chart chart = Chart(lines);
+	vector<int> emptycol;
+	vector<int> emptyrow;
 
-
-	for (long long a = 0; a < chart.Width; ++a) {
-		string col = chart.GetColumn(a);
-		if (col.find('#') == string::npos) {
-			cout << "Empty Column Found: " << a << '\n';
-			chart.InsertColumn(a, '.', 999999);
-			a += 999999;
-			cout << "Done\n";
+	for (int a = 0; a < chart.Height; ++a) {
+		string row = chart.GetRow(a);
+		if (row.find('#') == string::npos) {
+			emptyrow.push_back(a);
 		}
 	}
 
-	for (long long a = 0; a < chart.Height; ++a) {
-		string row = chart.GetRow(a);
-		if (row.find('#') == string::npos) {
-			cout << "Empty Row Found: " << a << '\n';
-			chart.InsertRow(a, '.', 999999);
-			a += 999999;
-			cout << "Done\n";
+	for (int a = 0; a < chart.Width; ++a) {
+		string col = chart.GetColumn(a);
+		if (col.find('#') == string::npos) {
+			emptycol.push_back(a);
 		}
 		else {
-			long long gxid = row.find('#');
+			int gxid = col.find('#');
 			while (gxid != string::npos) {
-				Galaxies.push_back(ivec2(gxid, a));
-				gxid = row.find('#', gxid + 1);
+				Galaxies.push_back(ivec2(a + emptycol.size() * 999999, gxid + (emptyrow.size() - (find_if(emptyrow.rbegin(), emptyrow.rend(), [gxid](int i) { return i < gxid; }) - emptyrow.rbegin())) * 999999));
+				gxid = col.find('#', gxid + 1);
 			}
 		}
 	}
@@ -1479,13 +1474,13 @@ long long Day11_2(vector<string>& lines) {
 			NonspecificPair<ivec2> pair = NonspecificPair<ivec2>(galaxy, galaxy2);
 
 			if (Distances.find(pair) == Distances.end()) {
-				long long dist = abs(galaxy.X - galaxy2.X) + abs(galaxy.Y - galaxy2.Y);
+				int dist = abs(galaxy.X - galaxy2.X) + abs(galaxy.Y - galaxy2.Y);
 				Distances[pair] == dist;
 				sum += dist;
 			}
 		}
 	}
 
-	//cout << chart;
+	cout << chart;
 	return sum;
 }
