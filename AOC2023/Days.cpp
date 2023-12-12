@@ -1486,11 +1486,10 @@ long long Day11_2(vector<string>& lines) {
 }
 #pragma endregion day11
 
-bool Day12Recurse(int& sum, vector<int>& numbers, int* numberend, int* numberp, string& line, int pos, char* c) {
+bool Day12Recurse(int& sum, vector<int>& numbers, int* numberend, int* numberp, string& line, int pos, char* c, int& linesize) {
 
 	bool Last = numberp == numberend;
 	int number = *numberp;
-	int linesize = line.length();
 
 	if (pos + number > linesize)
 		return false;
@@ -1524,9 +1523,9 @@ bool Day12Recurse(int& sum, vector<int>& numbers, int* numberend, int* numberp, 
 	}
 
 	for (int a = number + 1; a < linesize - pos; ++a) {
-		if (!Day12Recurse(sum, numbers, numberend, numberp + 1, line, a + pos, c+a))
+		if (!Day12Recurse(sum, numbers, numberend, numberp + 1, line, a + pos, c+a, linesize))
 			break;
-		if (nextdam == a)
+		if (nextdam == a + pos)
 			break;
 	}
 
@@ -1546,9 +1545,10 @@ int Day12_1(vector<string>& lines) {
 			numbers.push_back(stoi(str));
 		
 		int numbercount = numbers.size();
+		int linesize = segments[0].length();
 
 		for (int a = 0; a < segments[0].length(); ++a) {
-			Day12Recurse(sum, numbers, &numbers.back(), &numbers.front(), segments[0], a, &segments[0][0]);
+			Day12Recurse(sum, numbers, &numbers.back(), &numbers.front(), segments[0], a, &segments[0][0], linesize);
 			if (segments[0][a] == '#')
 				break;
 		}
@@ -1579,8 +1579,10 @@ int Day12_2(vector<string>& lines) {
 
 		char* c = &input[0];
 
-		for (int a = 0; a < input.length(); ++a) {
-			Day12Recurse(sum, numbers, &numbers.back(), &numbers.front(), input, a, c + a);
+		int linesize = input.length();
+
+		for (int a = 0; a < linesize; ++a) {
+			Day12Recurse(sum, numbers, &numbers.back(), &numbers.front(), input, a, c + a, linesize);
 			if (*(c + a) == '#')
 				break;
 		}
