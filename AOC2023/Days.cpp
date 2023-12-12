@@ -1279,7 +1279,7 @@ int Day10_2(vector<string>& lines) {
 	return count(gapmap.begin(),gapmap.end(),3);
 }
 #pragma endregion day10
-
+#pragma region day11
 template <typename T>
 struct NonspecificPair {
 public:
@@ -1482,5 +1482,110 @@ long long Day11_2(vector<string>& lines) {
 	}
 
 	cout << chart;
+	return sum;
+}
+#pragma endregion day11
+
+bool Day12Recurse(int& sum, vector<int>& numbers, int* numberend, int* numberp, string& line, int pos, char* c) {
+
+	bool Last = numberp == numberend;
+	int number = *numberp;
+	int linesize = line.length();
+
+	if (pos + number > linesize)
+		return false;
+
+	for (int a = 0; a < number; ++a) {
+		if (*(c + a) == '.') {
+			return true;
+		}
+	}
+
+	if (!Last && (pos + number == linesize))
+		return false;
+
+	int nextdam = string::npos;
+	char* nd = c + number;
+	for (int a = pos + number; a < linesize; ++a, ++nd) {
+		if (*nd == '#') {
+			nextdam = a;
+			break;
+		}
+	}
+
+	if (nextdam == pos + number)
+		return true;
+
+	if (Last) {
+		if(nextdam == string::npos)
+			sum++;
+
+		return true;
+	}
+
+	for (int a = number + 1; a < linesize - pos; ++a) {
+		if (!Day12Recurse(sum, numbers, numberend, numberp + 1, line, a + pos, c+a))
+			break;
+		if (nextdam == a)
+			break;
+	}
+
+	return true;
+}
+
+int Day12_1(vector<string>& lines) {
+	int sum = 0;
+
+	for (string line : lines) {
+		vector<string> segments;
+		Split(line, ' ', segments);
+		vector<string> numberstrings;
+		Split(segments[1], ',', numberstrings);
+		vector<int> numbers;
+		for (string str : numberstrings)
+			numbers.push_back(stoi(str));
+		
+		int numbercount = numbers.size();
+
+		for (int a = 0; a < segments[0].length(); ++a) {
+			Day12Recurse(sum, numbers, &numbers.back(), &numbers.front(), segments[0], a, &segments[0][0]);
+			if (segments[0][a] == '#')
+				break;
+		}
+	}
+
+	return sum;
+}
+
+int Day12_2(vector<string>& lines) {
+	int sum = 0;
+
+	for (string line : lines) {
+		vector<string> segments;
+		Split(line, ' ', segments);
+		vector<string> numberstrings;
+		Split(segments[1], ',', numberstrings);
+		vector<int> numbers;
+		string input = "";
+		for (int a = 0; a < 5; ++a) {
+			for (string str : numberstrings)
+				numbers.push_back(stoi(str));
+			input += segments[0];
+			if (a != 4)
+				input += '?';
+		}
+
+		int numbercount = numbers.size();
+
+		char* c = &input[0];
+
+		for (int a = 0; a < input.length(); ++a) {
+			Day12Recurse(sum, numbers, &numbers.back(), &numbers.front(), input, a, c + a);
+			if (*(c + a) == '#')
+				break;
+		}
+		cout << input << " " << numbercount << "\n";
+	}
+
 	return sum;
 }
