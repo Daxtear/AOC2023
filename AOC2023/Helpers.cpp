@@ -4,12 +4,17 @@
 #include "Helpers.h"
 
 string Combine(vector<string>& strings) {
+	return Combine(strings, 0, strings.size());
+}
+
+string Combine(vector<string>& strings, int start, int count) {
 	string str = "";
-	for (string s : strings) {
-		str += s;
+	for (int a = start; a < start + count; ++a) {
+		str += strings[a];
 	}
 	return str;
 }
+
 
 string* CombineOnHeap(vector<string>& strings) {
 	string* str = new string();

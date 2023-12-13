@@ -67,12 +67,17 @@ int main()
 	//long long day11_1 = Day11_1(day11Data);
 	//long long day11_2 = Day11_2(day11Data);
 
-	vector<string> day12Data;
-	ReadFile("Day12.txt", day12Data);
+	//vector<string> day12Data;
+	//ReadFile("Day12.txt", day12Data);
 	//int day12_1 = Day12_1(day12Data);
-	int day12_2 = Day12_2(day12Data);
+	//int day12_2 = Day12_2(day12Data);
 
-	cout << to_string(day12_2) + "\r\n";
+	vector<string> day13Data;
+	ReadFile("Day13.txt", day13Data);
+	//int day13_1 = Day13_1(day13Data);
+	int day13_2 = Day13_2(day13Data);
+
+	cout << to_string(day13_2) + "\r\n";
 }
 
 // Programm ausführen: STRG+F5 oder Menüeintrag "Debuggen" > "Starten ohne Debuggen starten"

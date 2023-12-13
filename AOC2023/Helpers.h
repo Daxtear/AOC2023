@@ -6,6 +6,7 @@
 using namespace std;
 
 string Combine(vector<string>& strings);
+string Combine(vector<string>& strings, int start, int count);
 string* CombineOnHeap(vector<string>& strings);
 void Split(string str, char seperator, vector<string>& segments);
 void SplitToInt(string str, char seperator, vector<int>& segments);

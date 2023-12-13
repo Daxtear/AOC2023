@@ -1332,10 +1332,13 @@ public:
 	long long Height;
 	long long Width;
 
-	Chart(vector<string> rows) {
-		Data = Combine(rows);
-		Height = rows.size();
-		Width = rows[0].length();
+	Chart(vector<string>& rows, int start, int count) {
+		Data = Combine(rows, start, count);
+		Height = count;
+		Width = rows[start].length();
+	}
+
+	Chart(vector<string>& rows) : Chart(rows, 0, rows.size()) {
 	}
 
 	string GetRow(long long row) {
@@ -1348,6 +1351,66 @@ public:
 			str += Data[column + a * Width];
 		}
 		return str;
+	}
+
+	bool MatchRows(long long row1, long long row2) {
+		if (row1 == row2)
+			return true;
+
+		char* r1 = &Data[row1 * Width];
+		char* r2 = &Data[row2 * Width];
+
+		for (long long a = 0; a < Width; ++a) {
+			if (*(r1 + a) != *(r2 + a))
+				return false;
+		}
+		return true;
+	}
+
+	int GetRowDiffCount(long long row1, long long row2) {
+		if (row1 == row2)
+			return 0;
+
+		int sum = 0;
+
+		char* r1 = &Data[row1 * Width];
+		char* r2 = &Data[row2 * Width];
+
+		for (long long a = 0; a < Width; ++a) {
+			if (*(r1 + a) != *(r2 + a))
+				sum++;
+		}
+		return sum;
+	}
+
+	bool MatchColumns(long long col1, long long col2) {
+		if (col1 == col2)
+			return true;
+
+		char* c1 = &Data[col1];
+		char* c2 = &Data[col2];
+
+		for (long long a = 0; a < Height; ++a) {
+			if (*(c1 + a * Width) != *(c2 + a * Width))
+				return false;
+		}
+		return true;
+	}
+
+	int GetColDiffCount(long long col1, long long col2) {
+		if (col1 == col2)
+			return 0;
+
+		int sum = 0;
+
+		char* c1 = &Data[col1];
+		char* c2 = &Data[col2];
+
+		for (long long a = 0; a < Height; ++a) {
+			if (*(c1 + a * Width) != *(c2 + a * Width))
+				sum++;
+		}
+		return sum;
 	}
 
 	void InsertRow(long long index, char initializer, int count = 1) {
@@ -1485,7 +1548,7 @@ long long Day11_2(vector<string>& lines) {
 	return sum;
 }
 #pragma endregion day11
-
+#pragma region day12
 bool Day12Recurse(int& sum, vector<int>& numbers, int* numberend, int* numberp, string& line, int pos, char* c, int& linesize) {
 
 	bool Last = numberp == numberend;
@@ -1589,5 +1652,118 @@ int Day12_2(vector<string>& lines) {
 		cout << input << " " << numbercount << "\n";
 	}
 
+	return sum;
+}
+#pragma endregion day12
+
+int Day13_1(vector<string>& lines) {
+	
+	int linessize = lines.size();
+	int sum = 0;
+
+	int chartstart = 0;
+	for (int a = 0; a < linessize; ++a) {
+		if (lines[a] == "" || a + 1 == linessize) {
+			if (a + 1 == linessize)
+				a++;
+
+			Chart chart = Chart(lines, chartstart, a - chartstart);
+			
+			bool rowfound = false;
+			for (int b = 1; b < chart.Height; ++b) {
+				if (chart.MatchRows(b, b - 1)) {
+					bool nonrepeat = false;
+					int minrows = min(b,(int)chart.Height - b);
+
+					for (int c = 1; c < minrows; ++c) {
+						if (!chart.MatchRows(b + c, b - (1 + c)))
+							nonrepeat = true;
+					}
+
+					if (!nonrepeat) {
+						rowfound = true;
+						sum += b * 100;
+						break;
+					}
+				}
+			}
+			if (!rowfound) {
+				for (int b = 1; b < chart.Width; ++b) {
+					if (chart.MatchColumns(b, b - 1)) {
+						bool nonrepeat = false;
+						int mincols = min(b, (int)chart.Width - b);
+
+						for (int c = 1; c < mincols; ++c) {
+							if (!chart.MatchColumns(b + c, b - (1 + c)))
+								nonrepeat = true;
+						}
+
+						if (!nonrepeat) {
+							sum += b;
+							break;
+						}
+					}
+				}
+			}
+			a++;
+			chartstart = a;
+		}
+	}
+	return sum;
+}
+
+int Day13_2(vector<string>& lines) {
+
+	int linessize = lines.size();
+	int sum = 0;
+
+	int chartstart = 0;
+	for (int a = 0; a < linessize; ++a) {
+		if (lines[a] == "" || a + 1 == linessize) {
+			if (a + 1 == linessize)
+				a++;
+
+			Chart chart = Chart(lines, chartstart, a - chartstart);
+
+			bool colfound = false;
+			for (int b = 1; b < chart.Width; ++b) {
+				int diffcount = chart.GetColDiffCount(b, b - 1);
+				if (diffcount < 2) {
+					int mincols = min(b, (int)chart.Width - b);
+
+					for (int c = 1; c < mincols; ++c) {
+						diffcount += chart.GetColDiffCount(b + c, b - (1 + c));
+					}
+
+					if (diffcount == 1) {
+						sum += b;
+						colfound = true;
+						break;
+					}
+				}
+			}
+			
+			if (!colfound) {
+				for (int b = 1; b < chart.Height; ++b) {
+					int diffcount = chart.GetRowDiffCount(b, b - 1);
+					if (diffcount < 2) {
+						int minrows = min(b, (int)chart.Height - b);
+
+						for (int c = 1; c < minrows; ++c) {
+							diffcount += chart.GetRowDiffCount(b + c, b - (1 + c));
+						}
+
+						if (diffcount == 1) {
+							sum += b * 100;
+							break;
+						}
+					}
+				}
+			}
+
+			a++;
+			chartstart = a;
+		}
+	}
 	return sum;
 }
