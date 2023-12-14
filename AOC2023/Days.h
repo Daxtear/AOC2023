@@ -32,3 +32,5 @@ int Day12_1(vector<string>& lines);
 int Day12_2(vector<string>& lines);
 int Day13_1(vector<string>& lines);
 int Day13_2(vector<string>& lines);
+int Day14_1(vector<string>& lines);
+int Day14_2(vector<string>& lines);

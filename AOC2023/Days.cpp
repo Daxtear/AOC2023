@@ -9,7 +9,7 @@
 #include "Days.h"
 #include "Helpers.h"
 
-using namespace std;
+//using namespace std;
 
 #pragma region day1
 
@@ -1332,6 +1332,12 @@ public:
 	long long Height;
 	long long Width;
 
+	Chart() {
+		Height = 1;
+		Width = 1;
+		Data = " ";
+	}
+
 	Chart(vector<string>& rows, int start, int count) {
 		Data = Combine(rows, start, count);
 		Height = count;
@@ -1345,12 +1351,28 @@ public:
 		return Data.substr(row * Width, Width);
 	}
 
+	vector<string> GetRows() {
+		vector<string> rows;
+		for (long long a = 0; a < Height; ++a) {
+			rows.push_back(GetRow(a));
+		}
+		return rows;
+	}
+
 	string GetColumn(long long column) {
 		string str = "";
 		for (long long a = 0; a < Height; ++a) {
 			str += Data[column + a * Width];
 		}
 		return str;
+	}
+
+	vector<string> GetColumns() {
+		vector<string> columns;
+		for (long long a = 0; a < Width; ++a) {
+			columns.push_back(GetColumn(a));
+		}
+		return columns;
 	}
 
 	bool MatchRows(long long row1, long long row2) {
@@ -1365,6 +1387,10 @@ public:
 				return false;
 		}
 		return true;
+	}
+
+	bool InBounds(long long row, long long column) {
+		return !(column < 0 || row < 0 || column >= Width || row >= Height);
 	}
 
 	int GetRowDiffCount(long long row1, long long row2) {
@@ -1413,6 +1439,10 @@ public:
 		return sum;
 	}
 
+	bool Match(Chart& other) {
+		return other.Data == Data;
+	}
+
 	void InsertRow(long long index, char initializer, int count = 1) {
 		Data.insert(index * Width, Width * count, '.');
 	}
@@ -1440,6 +1470,14 @@ public:
 
 	char GetValue(long long x, long long y) {
 		return Data[x + y * Width];
+	}
+
+	void SetValue(long long x, long long y, char value) {
+		Data[x + y * Width] = value;
+	}
+
+	void Swap(ivec2 pos1, ivec2 pos2) {
+		swap(Data[pos1.X + pos1.Y * Width], Data[pos2.X + pos2.Y * Width]);
 	}
 };
 
@@ -1550,8 +1588,6 @@ long long Day11_2(vector<string>& lines) {
 #pragma endregion day11
 #pragma region day12
 bool Day12Recurse(int& sum, vector<int>& numbers, int* numberend, int* numberp, string& line, int pos, char* c, int& linesize) {
-
-	bool Last = numberp == numberend;
 	int number = *numberp;
 
 	if (pos + number > linesize)
@@ -1562,6 +1598,8 @@ bool Day12Recurse(int& sum, vector<int>& numbers, int* numberend, int* numberp, 
 			return true;
 		}
 	}
+
+	bool Last = numberp == numberend;
 
 	if (!Last && (pos + number == linesize))
 		return false;
@@ -1623,6 +1661,7 @@ int Day12_1(vector<string>& lines) {
 int Day12_2(vector<string>& lines) {
 	int sum = 0;
 
+	int index = 0;
 	for (string line : lines) {
 		vector<string> segments;
 		Split(line, ' ', segments);
@@ -1649,13 +1688,14 @@ int Day12_2(vector<string>& lines) {
 			if (*(c + a) == '#')
 				break;
 		}
-		cout << input << " " << numbercount << "\n";
+		cout << index << " " << input << " " << sum << "\n";
+		index++;
 	}
 
 	return sum;
 }
 #pragma endregion day12
-
+#pragma region day13
 int Day13_1(vector<string>& lines) {
 	
 	int linessize = lines.size();
@@ -1765,5 +1805,149 @@ int Day13_2(vector<string>& lines) {
 			chartstart = a;
 		}
 	}
+	return sum;
+}
+#pragma endregion day13
+
+int Day14_1(vector<string>& lines) {
+	Chart chart = Chart(lines);
+	int sum = 0;
+	for (int col = 0; col < chart.Width; ++col) {
+		bool movement = true;
+		int load = 0;
+		while (movement) {
+			load = 0;
+			movement = false;
+			for (int row = 0; row < chart.Height; ++row) {
+				if (chart.GetValue(col, row) == 'O') {
+					if (row > 0 && chart.GetValue(col, row - 1) == '.') {
+						chart.Swap(ivec2(col,row), ivec2(col,row - 1));
+						movement = true;
+					}
+					else {
+						load += chart.Height - row;
+					}
+				}
+			}
+		}
+		sum += load;
+	}
+
+	cout << chart;
+
+	return sum;
+}
+
+int Day14_2(vector<string>& lines) {
+	Chart chart = Chart(lines);
+	int sum = 0;
+	long long check = 999;
+	Chart checkchart;
+
+	const long long big = 400000000;
+
+	for (long long a = 0; a < big; ++a) {
+
+		ivec2 dir = ivec2(0, 0);
+		long long maxx = 0;
+		switch (a % 4) {
+		case 0:
+			for (int col = 0; col < chart.Width; ++col) {
+				bool movement = true;
+				while (movement) {
+					movement = false;
+					for (int row = 0; row < chart.Height; ++row) {
+						if (chart.GetValue(col, row) == 'O') {
+							if (row > 0 && chart.GetValue(col, row - 1) == '.') {
+								chart.Swap(ivec2(col, row), ivec2(col, row - 1));
+								movement = true;
+							}
+						}
+					}
+				}
+			}
+			if (check < 0)
+				cout << chart << '\n';
+			break;
+		case 1:
+			for (int row = 0; row < chart.Height; ++row) {
+				bool movement = true;
+				while (movement) {
+					movement = false;
+					for (int col = 0; col < chart.Width; ++col) {
+						if (chart.GetValue(col, row) == 'O') {
+							if (col > 0 && chart.GetValue(col - 1, row) == '.') {
+								chart.Swap(ivec2(col, row), ivec2(col - 1, row));
+								movement = true;
+							}
+						}
+					}
+				}
+			}
+			if (check < 0)
+				cout << chart << '\n';
+			break;
+		case 2:
+			for (int col = 0; col < chart.Width; ++col) {
+				bool movement = true;
+				while (movement) {
+					movement = false;
+					for (int row = chart.Height - 1; row >= 0; --row) {
+						if (chart.GetValue(col, row) == 'O') {
+							if (row < chart.Height - 1 && chart.GetValue(col, row + 1) == '.') {
+								chart.Swap(ivec2(col, row), ivec2(col, row + 1));
+								movement = true;
+							}
+						}
+					}
+				}
+			}
+			if (check < 0)
+				cout << chart << '\n';
+			break;
+		case 3:
+			for (int row = 0; row < chart.Height; ++row) {
+				bool movement = true;
+				int load = 0;
+				while (movement) {
+					load = 0;
+					movement = false;
+					for (int col = chart.Width - 1; col >= 0; --col) {
+						if (chart.GetValue(col, row) == 'O') {
+							if (col < chart.Width - 1 && chart.GetValue(col + 1, row) == '.') {
+								chart.Swap(ivec2(col, row), ivec2(col + 1, row));
+								movement = true;
+							}
+							else if (a == big - 1) {
+								load += chart.Height - row;
+							}
+						}
+					}
+				}
+				if(a == big - 1)
+					sum += load;
+			}
+			if (check < 0)
+				cout << chart << '\n';
+			break;
+		}
+
+		if (a == check) {
+			vector<string> rows = chart.GetRows();
+			checkchart = Chart(rows);
+			cout << "Saved " << a << '\n';
+			cout << checkchart;
+		}
+		else if (check > 0 && a % 4 == 3 && chart.Match(checkchart)) {
+			long long diff = a - check;
+			cout << "Dupe at " << a << " diff: " << diff << '\n';
+			while (a + diff < big)
+				a += diff;
+			check = -1;
+		}
+	}
+	cout << '\n';
+	cout << chart;
+
 	return sum;
 }
